@@ -34,4 +34,6 @@ public class HomePage {
     public boolean isLogoVisible() {
         return driver.findElement(logo).isDisplayed();
     }
+    
+    
 }
