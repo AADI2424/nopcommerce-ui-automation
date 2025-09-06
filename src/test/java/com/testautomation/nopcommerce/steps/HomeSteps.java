@@ -25,7 +25,7 @@ public class HomeSteps {
     public void the_page_title_should_contain(String expected) {
         String title = homePage.getTitle();
         Assert.assertTrue(title.contains(expected),
-                "Expected title to contain: " + expected + " but got: " + title);
+                "Expected title contain: " + expected + " but got: " + title);
     }
 
     @Then("the search box is visible")
