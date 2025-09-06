@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="NopCommerce UI Suite" verbose="1" parallel="false">
+  <test name="Cucumber UI Tests">
+    <classes>
+      <class name="com.testautomation.nopcommerce.runner.CucumberTestRunner"/>
+    </classes>
+  </test>
+</suite>
