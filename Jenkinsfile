@@ -1,21 +1,19 @@
 pipeline {
   agent any
 
-  // Match Jenkins Global Tool names exactly
-  tools { 
+  tools {
     jdk 'JDK17'
     maven 'M3'
+  }
+
+  // Auto-build: poll the repo every ~2 minutes
+  triggers {
+    pollSCM('H/2 * * * *')
   }
 
   options {
     timestamps()
     buildDiscarder(logRotator(numToKeepStr: '20'))
-  }
-
-  // Choose either webhook trigger or polling (uncomment one)
-  triggers {
-    // pollSCM('H/2 * * * *')   // polls every ~2 minutes
-    // githubPush()            // if you configured a GitHub webhook
   }
 
   stages {
@@ -27,21 +25,35 @@ pipeline {
 
     stage('Build & Test') {
       steps {
-        // Windows agent -> use 'bat'. (On Linux, switch to 'sh')
-        bat 'mvn -B -e clean test -Dmaven.test.failure.ignore=false -Dbrowser=chrome -Dheadless=true'
+        bat 'mvn -B -U clean test -Dbrowser=chrome -Dheadless=true'
+      }
+    }
+
+    stage('Publish Reports') {
+      steps {
+        // JUnit XML
+        junit 'target/surefire-reports/*.xml'
+
+        // Cucumber HTML (requires "HTML Publisher" plugin)
+        publishHTML(target: [
+          reportDir: 'target',
+          reportFiles: 'cucumber-report.html',
+          reportName: 'Cucumber HTML',
+          keepAll: true,
+          alwaysLinkToLastBuild: true,
+          allowMissing: true
+        ])
+
+        // Keep artifacts (HTML/JSON, screenshots)
+        archiveArtifacts allowEmptyArchive: true,
+          artifacts: 'target/**/*.json, target/**/*.html, target/**/screenshots/**/*'
       }
     }
   }
 
   post {
     always {
-      junit 'target/surefire-reports/*.xml'
-      publishHTML(target: [
-        reportDir: 'target',
-        reportFiles: 'cucumber-report.html',
-        reportName: 'Cucumber HTML'
-      ])
-      archiveArtifacts allowEmptyArchive: true, artifacts: 'target/**/*.json, target/**/*.html, target/surefire-reports/*.xml, target/**/screenshots/**/*'
+      cleanWs deleteDirs: false, notFailBuild: true
     }
   }
 }
