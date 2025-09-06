@@ -1,22 +1,27 @@
 package com.testautomation.nopcommerce.hooks;
 
+import com.testautomation.nopcommerce.core.DriverManager;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
+import io.cucumber.java.Scenario;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
-import com.testautomation.nopcommerce.core.DriverManager;
 
-/**
- * Test hooks: create/quit WebDriver before/after each scenario.
- */
 public class TestHooks {
 
     @Before
-    public void setUp() {
-        WebDriver driver = DriverManager.getDriver();
+    public void start() {
+        DriverManager.initDriver();
     }
 
     @After
-    public void tearDown() {
+    public void stop(Scenario scenario) {
+        WebDriver driver = DriverManager.getDriver();
+        if (scenario.isFailed() && driver instanceof TakesScreenshot) {
+            byte[] png = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+            scenario.attach(png, "image/png", "failed_screenshot");
+        }
         DriverManager.quitDriver();
     }
 }

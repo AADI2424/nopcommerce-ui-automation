@@ -1,39 +1,49 @@
 package com.testautomation.nopcommerce.pages;
 
+import com.testautomation.nopcommerce.core.AppConfig;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
-/**
- * Home page object for demo.nopcommerce.com
- */
-public class HomePage {
+/** Page objects for the demo store home page. */
+public class HomePage extends BasePage {
 
-    private final WebDriver driver;
+    private static final By SEARCH_INPUT  = By.id("small-searchterms");
+    private static final By SEARCH_BUTTON = By.cssSelector("button[type='submit']");
 
-    private final By searchBox = By.cssSelector("input#small-searchterms");
-    private final By logo = By.cssSelector("div.header-logo a");
-
-    public HomePage(WebDriver driver) {
-        this.driver = driver;
+    /** Open base URL and wait for home page to be ready. */
+    public HomePage open() {
+        driver.get(AppConfig.BASE_URL);
+        return waitUntilLoaded();
     }
 
-    public void open(String baseUrl) {
-        driver.get(baseUrl);
+    /** Open any URL (useful if you point to other envs) and wait. */
+    public HomePage open(String url) {
+        driver.get(url);
+        return waitUntilLoaded();
     }
 
-    public boolean isSearchBoxVisible() {
-        WebElement el = driver.findElement(searchBox);
-        return el.isDisplayed();
+    /** Wait for a stable marker of the page (search box or title). */
+    public HomePage waitUntilLoaded() {
+        wait.until(ExpectedConditions.or(
+                ExpectedConditions.presenceOfElementLocated(SEARCH_INPUT),
+                ExpectedConditions.titleContains("nopCommerce")
+        ));
+        return this;
     }
 
+    /** Title accessor used by steps. */
     public String getTitle() {
         return driver.getTitle();
     }
 
-    public boolean isLogoVisible() {
-        return driver.findElement(logo).isDisplayed();
+    /** Visibility accessor used by steps. */
+    public boolean isSearchBoxVisible() {
+        return isVisible(SEARCH_INPUT);
     }
-    
-    
+
+    /** Simple search action (kept from your original). */
+    public void search(String text) {
+        type(SEARCH_INPUT, text);
+        click(SEARCH_BUTTON);
+    }
 }

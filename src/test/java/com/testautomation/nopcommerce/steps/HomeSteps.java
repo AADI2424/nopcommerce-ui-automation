@@ -1,24 +1,21 @@
 package com.testautomation.nopcommerce.steps;
 
-import org.testng.Assert;
+import com.testautomation.nopcommerce.core.AppConfig;
+import com.testautomation.nopcommerce.core.DriverManager;
+import com.testautomation.nopcommerce.pages.HomePage;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import org.openqa.selenium.WebDriver;
-import com.testautomation.nopcommerce.pages.HomePage;
-import com.testautomation.nopcommerce.core.DriverManager;
-import com.testautomation.nopcommerce.core.AppConfig;
+import org.testng.Assert;
 
-/**
- * Step definitions for home page smoke checks.
- */
 public class HomeSteps {
 
     private final WebDriver driver = DriverManager.getDriver();
-    private final HomePage homePage = new HomePage(driver);
+    private final HomePage homePage = new HomePage();
 
     @Given("I open the demo store")
     public void i_open_the_demo_store() {
-        homePage.open(AppConfig.BASE_URL);
+        homePage.open(AppConfig.BASE_URL).waitUntilLoaded();
     }
 
     @Then("the page title should contain {string}")
