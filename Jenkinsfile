@@ -1,49 +1,47 @@
 pipeline {
   agent any
-  tools { jdk 'jdk17'; maven 'maven3.9' }
+
+  // Match Jenkins Global Tool names exactly
+  tools { 
+    jdk 'JDK17'
+    maven 'M3'
+  }
 
   options {
     timestamps()
-    ansiColor('xterm')
     buildDiscarder(logRotator(numToKeepStr: '20'))
-    disableConcurrentBuilds()
   }
 
-  // If you can't set webhooks yet, uncomment the next line to poll every ~2 mins:
-  // triggers { pollSCM('H/2 * * * *') }
-
-  environment {
-    MAVEN_OPTS = '-Dmaven.test.failure.ignore=false'
-    BROWSER    = 'chrome'
-    HEADLESS   = 'true'
+  // Choose either webhook trigger or polling (uncomment one)
+  triggers {
+    // pollSCM('H/2 * * * *')   // polls every ~2 minutes
+    // githubPush()            // if you configured a GitHub webhook
   }
 
   stages {
-    stage('Checkout'){ steps { checkout scm } }
-    stage('Verify Tools'){ steps { bat 'mvn -v' ; bat 'java -version' } }
-    stage('Test') {
+    stage('Checkout') {
       steps {
-        bat 'mvn -B -e clean test -Dbrowser=%BROWSER% -Dheadless=%HEADLESS%'
+        checkout scm
       }
-      post {
-        always {
-          publishHTML(target: [
-            reportDir: 'target',
-            reportFiles: 'cucumber-report.html',
-            reportName: 'Cucumber HTML',
-            keepAll: true,
-            alwaysLinkToLastBuild: true,
-            allowMissing: true
-          ])
-          junit testResults: 'target/surefire-reports/*.xml', allowEmptyResults: true, keepLongStdio: true
-          archiveArtifacts artifacts: 'target/**/*.json, target/**/*.html, target/**/screenshots/**/*.* , target/surefire-reports/**/*.*', fingerprint: true
-        }
+    }
+
+    stage('Build & Test') {
+      steps {
+        // Windows agent -> use 'bat'. (On Linux, switch to 'sh')
+        bat 'mvn -B -e clean test -Dmaven.test.failure.ignore=false -Dbrowser=chrome -Dheadless=true'
       }
     }
   }
 
   post {
-    success { echo ' All tests passed.' }
-    failure { echo ' Tests failed — check reports.' }
+    always {
+      junit 'target/surefire-reports/*.xml'
+      publishHTML(target: [
+        reportDir: 'target',
+        reportFiles: 'cucumber-report.html',
+        reportName: 'Cucumber HTML'
+      ])
+      archiveArtifacts allowEmptyArchive: true, artifacts: 'target/**/*.json, target/**/*.html, target/surefire-reports/*.xml, target/**/screenshots/**/*'
+    }
   }
 }
