@@ -3,10 +3,9 @@ package com.testautomation.nopcommerce.config;
 public final class AppConfig {
   private AppConfig() {}
 
-  // Change default if needed; can be overridden in Jenkins with -DbaseUrl=...
   public static final String BASE_URL =
-      System.getProperty("baseUrl", "https://demo.nopcommerce.com");
+      com.testautomation.nopcommerce.core.AppConfig.BASE_URL;
 
   public static final int EXPLICIT_WAIT_SEC =
-      Integer.parseInt(System.getProperty("explicitWait", "30"));
+      com.testautomation.nopcommerce.core.AppConfig.EXPLICIT_WAIT_SEC;
 }

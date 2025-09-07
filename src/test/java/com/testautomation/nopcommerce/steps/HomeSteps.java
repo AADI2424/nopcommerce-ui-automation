@@ -1,6 +1,6 @@
 package com.testautomation.nopcommerce.steps;
 
-import com.testautomation.nopcommerce.core.AppConfig;
+import com.testautomation.nopcommerce.config.AppConfig;  
 import com.testautomation.nopcommerce.core.DriverManager;
 import com.testautomation.nopcommerce.pages.HomePage;
 import io.cucumber.java.en.Given;
@@ -15,7 +15,7 @@ public class HomeSteps {
 
     @Given("I open the demo store")
     public void i_open_the_demo_store() {
-        homePage.open(AppConfig.BASE_URL).waitUntilLoaded();
+        homePage.open().waitUntilLoaded();   // <-- use the no-arg open()
     }
 
     @Then("the page title should contain {string}")
