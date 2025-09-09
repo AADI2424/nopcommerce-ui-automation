@@ -13,11 +13,11 @@ public final class AppConfig {
         normalize(System.getProperty("baseUrl", "https://demo.nopcommerce.com/"));
 
     public static final int EXPLICIT_WAIT_SEC =
-        Integer.parseInt(System.getProperty("explicitWait", "10"));
+        Integer.parseInt(System.getProperty("explicitWait", "45"));
 
     public static final int IMPLICIT_WAIT_SEC =
         Integer.parseInt(System.getProperty("implicitWait", "0"));
 
     public static final int PAGELOAD_TIMEOUT_SEC =
-        Integer.parseInt(System.getProperty("pageLoadTimeout", "45"));
+        Integer.parseInt(System.getProperty("pageLoadTimeout", "60"));
 }
