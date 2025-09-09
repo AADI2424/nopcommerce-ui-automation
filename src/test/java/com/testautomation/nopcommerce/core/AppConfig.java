@@ -13,7 +13,7 @@ public final class AppConfig {
         normalize(System.getProperty("baseUrl", "https://demo.nopcommerce.com/"));
 
     public static final int EXPLICIT_WAIT_SEC =
-        Integer.parseInt(System.getProperty("explicitWait", "45"));
+        Integer.parseInt(System.getProperty("explicitWait", "30"));
 
     public static final int IMPLICIT_WAIT_SEC =
         Integer.parseInt(System.getProperty("implicitWait", "0"));
